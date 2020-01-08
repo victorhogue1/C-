@@ -1,0 +1,400 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033{\fonttbl{\f0\fnil\fcharset0 Calibri;}}
+{\*\generator Riched20 10.0.18362}\viewkind4\uc1 
+\pard\sa200\sl276\slmult1\f0\fs22\lang9 /* File polys.cpp\par
+  Created 12/1/2014\par
+ Last Modified 12/5/2014\par
+ Description: User inputs two polynomials. For each the program calculates the number of terms, degree, and derivative. It also\par
+ adds and subtracts the two polynomials and computes their derivatives. It also scales one polynomial by a multiple and calculates a\par
+ user input number of evaluations of the polynomials for user input values. */\par
+\par
+#include <iostream>\par
+#include <string>\par
+#include <cmath>\par
+#include <vector>\par
+using namespace std;\par
+class Term\par
+\{\par
+private:\par
+ int coeff;\par
+ int exp;\par
+public:\par
+ void setCoeff(const int coefficient);\par
+ void setExp(const int exponent);\par
+ \par
+ int getCoeff() const;\par
+ int getExp() const;\par
+ Term derivative() const;\par
+ double eval(const double x) const;\par
+ void displayFirst() const;\par
+ void display() const;\par
+\};\par
+class Poly\par
+\{\par
+private:\par
+ vector<Term> terms; \par
+public:\par
+ // member functions\par
+ void addTerm(const int coeff, const int exp);\par
+ void scale(const int fact);\par
+ Term getTerm(const int index) const; \par
+ int degree() const;      \par
+ int termCount() const;     \par
+ double eval(const double x) const;  \par
+ Poly derivative() const;    \par
+ Poly add(const Poly & poly) const;\par
+ Poly subtract(const Poly & poly) const;\par
+ void display(const string & label) const;\par
+\};\par
+// FUNCTION PROTOTYPES GO HERE:\par
+ // Replace with your code\par
+ void display_banner();\par
+ Poly read_poly(const int which);\par
+ void display_stats(Poly & p, const string & label);\par
+ void evaluate_poly(Poly & p); \par
+ void goodbye_banner();\par
+int main()\par
+\{\par
+ Poly poly1, poly2, add_poly, sub_poly;\par
+ int scale;\par
+ \par
+ display_banner();\par
+ \par
+ poly1 = read_poly(1);\par
+ cout << endl;\par
+ display_stats(poly1, "You entered polynomial #1");\par
+ poly2 = read_poly(2);\par
+ cout << endl;\par
+ display_stats(poly2, "You entered polynomial #2");\par
+ add_poly = poly1.add(poly2);\par
+ display_stats(add_poly, "The addition of both polynomials is");\par
+ sub_poly = poly1.subtract(poly2);\par
+ display_stats(sub_poly, "The subtraction of both polynomials is"); \par
+  \par
+ if (poly1.termCount() > 0) \{\par
+  cout << "Enter a scale factor to apply to polynomial #1: ";\par
+  cin >> scale;\par
+  poly1.scale(scale);\par
+  display_stats(poly1, "The polynomial after scaling");\par
+ \}\par
+ \par
+ evaluate_poly(poly1);\par
+ cout << endl;\par
+ goodbye_banner();\par
+ \par
+ return 0;\par
+\}\par
+   \par
+// FUNCTION DEFINITIONS GO HERE:\par
+ // Replace with your code\par
+void display_banner()\par
+\{\par
+ cout << "Welcome to fun with polynomials!" << endl;\par
+ cout << "You will enter two polynomials." << endl;\par
+ cout << "Please follow all instructions below." << endl << endl;\par
+\}      \par
+Poly read_poly(const int which)\par
+\{\par
+ Poly p;  // Stores constructed polynomial to be passed back\par
+ int coeff(0); // Takes coefficient input \par
+ int last_exp(0); // Keeps track of last exponent in input\par
+ int exp(0); // Takes exponent input\par
+ cout << "Enter poly #" << which << ":" << endl;\par
+ cin >> coeff >> exp;  //Inputs coefficient and exponent\par
+ last_exp = exp + 1;  \par
+ while ((coeff != 0 && exp > -1)&&(last_exp > exp)) //Loops until sentinel values (coefficient 0, negative or larger exp\par
+ \{   \par
+   p.addTerm(coeff,exp);  \par
+   if (exp == 0)\par
+   \{break;\} // Stops loop if exp is 0\par
+   last_exp = exp;\par
+   cin >> coeff >> exp;   //Inputs next coefficient and exponent\par
+ \}\par
+ return p;\par
+\}       \par
+void display_stats(Poly & p, const string & label)\par
+\{\par
+  int deg = p.degree();  //Stores polynomial degree  \par
+  int length = p.termCount();  //Stores polynomial length\par
+  const string label_2 = "The derivative is";  // Message for displaying the derivative\par
+  Poly der = p.derivative();  //Tales the derivative\par
+  p.display(label);  //Displays polynomial\par
+  cout << "The polynomial has degree " << deg << "." << endl;  //Displays degree\par
+  cout << "The polynomial has " << length << " term(s)." << endl;  //Displays number of terms\par
+  der.display(label_2);  //Displays derivative\par
+  cout << endl;\par
+\}      \par
+void evaluate_poly(Poly & p)\par
+\{\par
+ int num_eval(0);  //Stores number of times to evaluate\par
+ int x_val(0);  //Stores x input value\par
+ double y_val(0);  //Stores evaluated value\par
+ cout << "How many times would you like to evaluate polynomial #1? ";\par
+ cin >> num_eval;\par
+ for (int i=1;i<=num_eval;i++)\par
+ \{\par
+     cout << "Enter value to evaluate: ";\par
+     cin >> x_val;\par
+     y_val = p.eval(x_val);  //Calculates total evaluated value\par
+     cout << "     When x = " << x_val << " the polynomial evalutates to " << y_val << endl;\par
+  \}\par
+\}      \par
+void goodbye_banner()\par
+\{\par
+  cout << endl << "Thank you for playing!" << endl;\par
+\}      \par
+\par
+// CLASS MEMBER FUNCTION DEFINITINOS GO HERE:\par
+void Term::setCoeff(const int coefficient) \par
+\{\par
+ // Replace with your code\par
+ coeff = coefficient;  //sets private variable coeff\par
+\}\par
+void Term::setExp(const int exponent) \par
+\{\par
+ // Replace with your code\par
+ exp = exponent;  // sets private variable exp\par
+\}\par
+void Term::displayFirst() const\par
+\{\par
+ // Replace with your code\par
+ const int coeff = getCoeff(); // gets private variable coefficient\par
+ const int exp = getExp();  // gets private variable exponent\par
+ if (coeff < -1 && exp != 0)  //Displays the proper + or - and coefficient if not 1 or 0 and x's if not exponent 0\par
+ \{ cout << "-" << -1*coeff;\}\par
+ else if (coeff == -1 && exp == 0)\par
+ \{ cout << "- 1";\}\par
+ else if (coeff > 1)\par
+ \{cout << coeff;\}\par
+ else if (coeff == 1 && exp == 0)\par
+ \{cout << " 1 ";\}\par
+ if (exp == 1)\par
+ \{cout << "x";\}\par
+ else if (exp > 1)\par
+ \{cout << "x^" << exp;\}\par
+\}\par
+void Term::display() const\par
+\{\par
+ // Replace with your code\par
+ const int coeff = getCoeff();  // gets private variable coefficient\par
+ const int exp = getExp();  // gets private variable exponent\par
+ if (coeff < -1)  //Displays the proper + or - and coefficient if not 1 or 0 and x's if not exponent 0\par
+ \{cout << " - " << -1*coeff;\}\par
+ else if (coeff == -1 && exp != 0)\par
+ \{cout << " - ";\}\par
+ else if (coeff == -1 && exp == 0)\par
+ \{cout << " - 1 ";\}\par
+ else if (coeff == 1 && exp!= 0)\par
+ \{cout << " + ";\}\par
+ else if (coeff == 1 && exp == 0)\par
+ \{cout << " + " << coeff;\}\par
+ else if (coeff > 1)\par
+ \{cout << " + " << coeff;\}\par
+ if (exp == 1)\par
+ \{cout << "x ";\}\par
+ else if (exp > 1)\par
+ \{cout << "x^" << exp;\}\par
+\}\par
+int Term::getCoeff() const \par
+\{\par
+ // Replace with your code\par
+ return coeff;\par
+\}\par
+int Term::getExp() const \par
+\{\par
+ // Replace with your code\par
+ return exp;\par
+\}\par
+Term Term::derivative() const\par
+\{\par
+ // Replace with your code\par
+ \par
+ const int exp = getExp();   // gets private variable exponent\par
+ const int coeff = getCoeff();   // gets private variable coefficient\par
+ const int der_exp = exp - 1;  // stores derivative term's exponent\par
+ const int der_coeff = coeff*exp;  // stores derivative term's coefficient\par
+ Term deriv; // stores constructed derivative\par
+ deriv.setExp(der_exp);\par
+ deriv.setCoeff(der_coeff);\par
+ return deriv;\par
+\}\par
+double Term::eval(const double x) const\par
+\{\par
+ // Replace with your code\par
+ double val; // stores value of evaluated polynomial \par
+ const int coeff = getCoeff();  // gets private variable coefficient\par
+ const int exp = getExp();  // gets private variable exponent\par
+ val = pow(x,exp)*coeff;\par
+ return(val);\tab\par
+\}\par
+Term Poly::getTerm(const int index) const\par
+\{\par
+ // Replace with your code\par
+ Term term_1 = terms[index];  //gets private variable term\par
+ return(terms[index]);\par
+\}\par
+void Poly::addTerm(const int coeff, const int exp) \par
+\{\par
+ // Replace with your code\par
+ Term new_term;  // stores new term to be added\par
+ new_term.setCoeff(coeff);  //Sets new coefficent\par
+ new_term.setExp(exp);  //Sets new exponent\par
+ terms.push_back(new_term);\par
+\}\par
+void Poly::scale(const int fact) \par
+\{\par
+ // Replace with your code\par
+ const int length = termCount();  //Stores polynomial length\par
+ int coeff(0);    // stores coefficient\par
+ int new_coeff(0);  // stores newly scaled coefficient\par
+ Term term_1;  //stores new scaled term\par
+ for (int i=0;i<length;i++)\par
+ \{\par
+     term_1 = getTerm(i);\par
+     coeff = term_1.getCoeff();   // gets private variable coefficient\par
+     new_coeff = coeff*fact;  //calculates new scaled coefficient\par
+     term_1.setCoeff(new_coeff);   //Sets new coeffcient\par
+     terms[i] = term_1;\par
+ \}\par
+\}\par
+int Poly::degree() const \par
+\{\par
+ // Replace with your code\par
+ const int length = termCount();  //Stores polynomial length\par
+ int degree(0);  //stores polynomial degree\par
+ int current_exp(0);  //stores current exponent as for loop traverses the terms\par
+ Term term_1; // stores current term\par
+ for (int i=0; i<length-1; i++)  //Finds maximum degree by traversing each term\par
+ \{\par
+     term_1 = getTerm(i);\par
+     current_exp = term_1.getExp();\par
+     if (current_exp > degree)\par
+     \{ degree = current_exp; \}\par
+ \}\par
+ return degree;\par
+\}\par
+int Poly::termCount() const  \par
+\{\par
+ // Replace with your code\par
+ const int num_terms = terms.size();  // stores number of terms\par
+ return(num_terms);\par
+\}\par
+double Poly::eval(const double x) const\par
+\{\par
+ const int length = termCount();  //Stores polynomial length\par
+ double value(0);  // stores total value of evaluated polynomial\par
+ Term term_1;  // stores private variable term\par
+ for (int i=0; i<length; i++)\par
+ \{\par
+     term_1 = getTerm(i);  //Gets private variable term\par
+     value = value + term_1.eval(x);  //Keeps running total of evaluated polynomials\par
+ \}    \par
+ return value;\par
+ // Replace with your code\par
+\}\par
+Poly Poly::derivative() const\par
+\{\par
+ // Replace with your code\par
+ const int length = termCount();  //Stores polynomial length\par
+ int coeff(0);  //Stores current term coefficient\par
+ int exp(0);  //Stores current term exponent\par
+ Poly deriv;  //Stores constructed derivative polynomial\par
+ Term term_1;  //Stores current term\par
+ Term der_term;  //Stores constructed derivative term\par
+ for (int i=0; i<length; i++)  //Constructs the derivative of each term per loop\par
+ \{\par
+     term_1 = getTerm(i);\par
+     der_term = term_1.derivative();\par
+     coeff = der_term.getCoeff();\par
+     exp = der_term.getExp();\par
+     deriv.addTerm(coeff,exp);   //Adds newly constructed derivative term to derivative polynomial\par
+ \}\par
+ return deriv;\par
+\}\par
+Poly Poly::add(const Poly & poly) const\par
+\{\par
+ // Replace with your code\par
+  int exp_1(0); //Stores object term exponent\par
+  int exp_2(0); //Stores passed term exponent\par
+  const int length_1 = termCount();   //Stores object polynomial length\par
+  const int length_2 = poly.termCount();  //Stores passed polynomial length\par
+  int coeff_1(0); //Stores object term coefficient\par
+  int coeff_2(0);  //Stores passed term coefficient\par
+  int new_coeff(0);  //Stores constructed coeffcient from addition\par
+  int deg_1 = degree();  //Stores object polynomial degree\par
+  int deg_2 = poly.degree();  //Stores passed polynomial degree\par
+  int max_deg = 0;  //Stores max degree of both polynomials\par
+  Term term_1;  //Stores current term from object polynomial\par
+  Term term_2;  //Stores current term from passed polynomial\par
+  Poly sum;  //Stores constructed polynomial from addition\par
+  \par
+  if (deg_1 >= deg_2)  //Finds max degree of both polynomials\par
+  \{max_deg = deg_1;\}\par
+  else if(deg_1 < deg_2)\par
+  \{max_deg = deg_2;\}\par
+  \par
+  for (int i=max_deg;i>=0;i--)  //Traverses both arrays and finds terms of each degree and adds them\par
+  \{\par
+    for (int k=0;k<=max_deg;k++)      \par
+    \{\par
+      if (length_1 >= k)\par
+      \{       \par
+       term_1 = getTerm(k);\par
+       exp_1 = term_1.getExp();\par
+      \}\par
+      else \{exp_1 = -1;\}      \par
+      if (exp_1 == i)\par
+      \{\par
+        coeff_1 = term_1.getCoeff();        \par
+        new_coeff = new_coeff + coeff_1;\par
+      \}\par
+      if (length_2 >= k)\par
+      \{       \par
+       term_2 = poly.getTerm(k);\par
+       exp_2 = term_2.getExp();\par
+      \}\par
+      else \{exp_2 = -1;\}      \par
+      if (exp_2 == i)\par
+      \{\par
+        coeff_2 = term_2.getCoeff();        \par
+        new_coeff = new_coeff + coeff_2;\par
+      \}\par
+    \}\par
+    if (new_coeff != 0)\par
+    \{\par
+       sum.addTerm(new_coeff,i);\par
+       new_coeff = 0;\par
+    \}\par
+  \}\par
+   return sum;\par
+\}  \par
+\par
+  \par
+\par
+Poly Poly::subtract(const Poly & poly) const\par
+\{\par
+ // Replace with your code\par
+ Poly diff;  //Stores constructed subtraction polynomial\par
+ Poly poly2 = poly;  //scale expects a non-constant Poly object, so we make a copy of the const poly to pass\par
+ const int fact = -1;  //Stores value to scale passed polynomial by (to subtract)\par
+ poly2.scale(fact);\par
+ diff = add(poly2);\par
+ return diff;\par
+\}\par
+ \par
+void Poly::display(const string & label) const\par
+\{\par
+ // Replace with your code\par
+ int length = termCount();  //Stores polynomial length\par
+ Term n_term; //Stores current term to be displayed\par
+ cout << label << ": ";\par
+ \par
+ terms[0].displayFirst();  //Displays first term\par
+ for (int i=1;i<length;i++)\par
+ \{\par
+     n_term = getTerm(i);  //Gets each term\par
+     n_term.display();   //Displays each term\par
+ \}\par
+ cout << endl;\par
+\}\par
+}
+ 

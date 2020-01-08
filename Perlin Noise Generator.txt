@@ -1,0 +1,84 @@
+Perlin 3.0
+float[w*h] texture main(int w, int h, float s, int f, int xmax, int ymax)
+{
+	float final maxGridX = rounddown(w/f);
+   	float final maxGridY = rounddown(h/f); 
+   	mygradGrid = new final gradGrid[maxGridX][maxGridY] = gradGrid.createGrid(w, h, f, s, maxGridX, maxGridY)
+	float myTexture [w*h];  	
+	//Generates noise at all points (x,y) in {(x,y):0<x<xmax;0<y<ymax}.
+	for (int i = 0, i < xmax, i++)
+	{
+		for (int j = 0; j < ymxax; j++)
+			//Generates 2d noise
+			float noise[maxGridX][maxGridY] = perlin(i, j, maxGridX, 				maxGridY, gradGrid[][])
+			// Unfurls 2d noise into 1d noise
+			myTexture[i+j] = noise(i,j);
+		}
+	}
+   return(myTexture	)
+}
+
+
+//lerp
+float weightedAverage(float a, float b, float w)
+{ return(a*w+b*(1-w)); }
+
+//dotGradient
+float distDotGrad(float gridX, float gridY, float pointX, float pointY, float gradGrid[maxGridX][maxGridY])
+{
+	//distance vector
+	float dx = gridX-pointX;
+	float dy = gridY-pointY;
+	//dot product with gradient
+	return(dx*gradGrid.getGrad(gridX)+dy*gradGrid.getGrad(gridY));
+}
+
+Class float gradGrid [][]
+
+//Methods
+private float array[][] = createGrid(int final w, int final h, float final f, float final s, float final maxGridX, float final maxGridY)
+{  
+	float final blocksize = rounddown(min(w,h)/f);
+   	float gradGrid[maxGridX,maxGridY] = zeros[maxGridX,maxGridY];
+   	for (int i = 1; i < w; i++)
+   	{
+		for (int j = 1; j < h; j++)
+		{ 
+      			gradGrid(i*blockSize, j*blockSize) = rand(-s,s);
+		}
+   	}
+   	return (gradGrid);
+}       
+
+
+//Gets gradient
+public vector2 = getGrad(int gridX, int gridY)
+{
+	return(gradGrid[gridX][gridY]);
+}
+
+//Perlin function - returns the noise value at location (x,y)
+
+float noise(float final x, float final y, int maxGridX, int maxGridY, float gradGrid[maxGridX][maxGridY])
+{
+	//Define the four grid corners
+/*x0*/	int final xLeft = rounddown(x);
+/*x1*/	int final xRight = xLeft + 1;
+/*y0*/	int final yBottom = rounddown(y);
+/*x1*/	int final xTop = yBottom + 1;
+
+	//Calculates weights
+/*sx*/	float weightX = x - float(xLeft);
+/*sy*/	float weightY = y - float(yBottom);
+
+	//Calculate weighted averages
+/*n0*/	float bottomLeftDot = distDotGrad(xLeft, yBottom, x, y, gradGrid);
+/*n1*/	float bottomRightDot = distDotGrad(xRight, yBottom, x, y, gradGrid);
+/*n0*/	float topLeftDot = distDotGrad(xLeft, yTop, x, y, gradGrid);
+/*n1*/	float topRightDot = distDotGrad(xRight, yTop, x, y, gradGrid);
+
+/*ix0*/	float bottomAvg = weightedAverage(bottomLeftDot, bottomRightDot, weightX);
+/*ix1*/	float topAvg = weightedAverage(topLeftDot, topRightDot, weightX);
+/*value*/	float noise = weightedAverage(bottomAvg, topAvg, weightY); 
+	return(noise);
+}
